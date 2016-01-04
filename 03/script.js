@@ -1,3 +1,5 @@
+// http://xgrommx.github.io/rx-book/content/getting_started_with_rxjs/creating_and_querying_observable_sequences/bridging_to_callbacks.html
+// Callbacks
 var callback = function(param, cb) {
   setTimeout(function() {
     cb('From callback ', param);
@@ -67,6 +69,8 @@ setTimeout(
     .toCallback(cb)
   , 0);
 
+
+// http://xgrommx.github.io/rx-book/content/getting_started_with_rxjs/creating_and_querying_observable_sequences/bridging_to_promises.html
 //--- Promises
 // Create a promise which resolves 42
 var promise1 = new Promise((resolve, reject) => resolve(42));
