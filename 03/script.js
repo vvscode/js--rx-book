@@ -63,6 +63,50 @@ function cb(x) {
 }
 
 setTimeout(
-  Rx.Observable.timer(500)
+  Rx.Observable.timer(100)
     .toCallback(cb)
-  , 500);
+  , 0);
+
+//--- Promises
+// Create a promise which resolves 42
+var promise1 = new Promise((resolve, reject) => resolve(42));
+var source1 = Rx.Observable.fromPromise(promise1);
+
+var subscription1 = source1.subscribe(
+  x => console.log('onNext:', x),
+  e => console.log('onError:', e),
+  () => console.log('onCompleted')
+);
+// => onNext: 42
+// => onCompleted
+
+// Create a promise which rejects with an error
+var promise2 = new Promise((resolve, reject) => reject(new Error('reason')));
+
+var source2 = Rx.Observable.fromPromise(promise2);
+
+var subscription2 = source2.subscribe(
+  x => console.log('onNext:', x),
+  e => console.log('onError:', e),
+  () => console.log('onCompleted')
+);
+// => onError: reject
+
+// Return a single value
+var source1 = Rx.Observable.just(1).toPromise(Promise);
+source1.then(
+  value => console.log('Resolved value: %s', value),
+  reason => console.log('Rejected reason: %s', reason)
+);
+// => Resolved value: 1
+
+// Reject the Promise
+var source2 = Rx.Observable.throw(new Error('reason')).toPromise(Promise);
+source2.then(
+  value => console.log('Resolved value: %s', value),
+  reason => console.log('Rejected reason: %s', reason)
+);
+
+// to change .toPromise output for hole system we can do ( for non ES6 environments )
+// Rx.config.Promise = RSVP.Promise;
+// var source1 = Rx.Observable.just(1).toPromise(); // RSVP-promise
