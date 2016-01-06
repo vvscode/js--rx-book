@@ -76,3 +76,33 @@ Rx.Observable
   .fromEvent(document, 'mousemove')
   .filter(pos => pos.x === pos.y)
   .subscribe(pos => console.log('mouse at ' + pos.x + ', ' + pos.y));
+
+
+// Time-based Operation
+console.log('Time-based operations');
+/*
+ create a simple sequence of integers for every second.
+ We then use the bufferWithCount operator and specify that each buffer will hold 5 items from the sequence.
+ The onNext is called when the buffer is full. We then tally the sum of the buffer using calling Array.reduce.
+ The buffer is automatically flushed and another cycle begins.
+ The printout will be 10, 35, 60… in which 10=0+1+2+3+4, 35=5+6+7+8+9, and so on.
+ */
+Rx.Observable
+  .interval(1000)
+  .bufferWithCount(5)
+  .map(arr => arr.reduce((acc, x) => acc + x, 0))
+  .subscribe(console.log.bind(console));
+
+/*
+ create a buffer with a specified time span in milliseconds.
+ In the following example, the buffer will hold items that have accumulated for 3 seconds.
+ The printout will be 3, 12, 21… in which 3=0+1+2, 12=3+4+5, and so on.
+ */
+Rx.Observable
+  .interval(1000)
+  .bufferWithTime(3000)
+  .map(arr => arr.reduce((acc, x) => acc + x, 0))
+  .subscribe(console.log.bind(console));
+
+// Note that if you are using any of the buffer* or window* operators,
+// you have to make sure that the sequence is not empty before filtering on it.
