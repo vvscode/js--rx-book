@@ -56,3 +56,23 @@ var subscription = resultSeq.subscribe(
 // => onNext: 102
 // => onCompleted
 
+// Filtering
+console.log('Filtering');
+// it takes an initial state (0 in our example), a conditional function to terminate (fewer than 10 times), an iterator (+1), a result selector (a square function of the current value)
+Rx.Observable.generate(
+  0,
+  i => i < 10,
+  i => i + 1,
+  i => i * i)
+  // prints out only those smaller than 5
+  .filter(n => n < 5)
+  .subscribe(
+    (x) => console.log('onNext: %s', x),
+    (e) => console.log('onError: %s', e.message),
+    () => console.log('onCompleted')
+  );
+
+Rx.Observable
+  .fromEvent(document, 'mousemove')
+  .filter(pos => pos.x === pos.y)
+  .subscribe(pos => console.log('mouse at ' + pos.x + ', ' + pos.y));
