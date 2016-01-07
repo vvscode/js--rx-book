@@ -12,3 +12,4 @@ Notes for 'RxJS - Javascript library for functional reactive programming' book (
 
 05 - http://xgrommx.github.io/rx-book/content/getting_started_with_rxjs/creating_and_querying_observable_sequences/querying_observable_sequences.html
 
+06 - http://xgrommx.github.io/rx-book/content/getting_started_with_rxjs/creating_and_querying_observable_sequences/error_handling.html
