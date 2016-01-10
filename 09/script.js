@@ -97,3 +97,26 @@ var source = Rx.Observable.timer(5000, 1000)
 // => 4: 1382646956400
 // => 5: 1382646957400
 // => 6: 1382646958400
+
+// Long Stack Traces Support
+Rx.Observable.range(0, 100)
+  .timestamp()
+  .map((x) => {
+    if (x.value > 98) throw new Error();
+    return x;
+  })
+  .subscribeOnError(err => console.log(err.stack));
+
+/*
+ RxJS comes with optional support for "long stack traces" where the stack property of Error
+ from onError calls is rewritten to be traced along asynchronous jumps instead of stopping at the most recent one
+ */
+Rx.config.longStackSupport = true;
+
+Rx.Observable.range(0, 100)
+  .timestamp()
+  .map((x) => {
+    if (x.value > 98) throw new Error();
+    return x;
+  })
+  .subscribeOnError(err => console.log(err.stack));
