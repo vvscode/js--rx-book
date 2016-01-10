@@ -59,3 +59,41 @@ if (false && 'I know how to fix next broken code') {
     collectionAssert.assertEqual(input.subscriptions, [subscribe(150, 500), subscribe(150, 400), subscribe(400, 500)]);
   });
 }
+
+// Debugging your Rx application
+/*
+ You can use the do operator to debug your Rx application.
+ The do operator allows you to specify various actions to be taken for each item of observable sequence (e.g., print or log the item, etc.).
+ This is especially helpful when you are chaining many operators and you want to know what values are produced at each level.
+ */
+var seq1 = Rx.Observable.interval(1000)
+  .do(console.log.bind(console))
+  .bufferWithCount(5)
+  .do(x => console.log('buffer is full'))
+  .subscribe(x => console.log('Sum of the buffer is ' + x.reduce((acc, x) => acc + x, 0)));
+// => 0
+// => 1
+// => 2
+// => 3
+// => 4
+// => buffer is full
+// => Sum of the buffer is 10
+// ...
+
+/*
+ You can also use the timestamp operator to verify the time when an item is pushed out by an observable sequence.
+ This can help you troubleshoot time-based operations to ensure accuracy.
+ */
+console.log('Current time: ' + Date.now());
+var source = Rx.Observable.timer(5000, 1000)
+  .timestamp()
+  .subscribe(x => console.log(x.value + ': ' + x.timestamp));
+/* Output will look similar to this */
+// => Current time: 1382646947400
+// => 0: 1382646952400
+// => 1: 1382646953400
+// => 2: 1382646954400
+// => 3: 1382646955400
+// => 4: 1382646956400
+// => 5: 1382646957400
+// => 6: 1382646958400
