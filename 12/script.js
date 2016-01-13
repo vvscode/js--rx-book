@@ -30,3 +30,26 @@ jQuery.fn.toObservable = function (eventName, selector) {
 };
 $(document).toObservable('mousemove')
     .subscribe(e => $('#results2').text(`fromPlugin: ${e.clientX}, ${e.clientY}`));
+
+// AJAX
+function searchWikipedia (term) {
+    var promise = $.ajax({
+        url: 'http://en.wikipedia.org/w/api.php',
+        dataType: 'jsonp',
+        data: {
+            action: 'opensearch',
+            format: 'json',
+            search: encodeURI(term)
+        }
+    }).promise();
+    return Rx.Observable.fromPromise(promise);
+}
+
+$('#input').toObservable('keyup')
+    .map(e => e.target.value)
+    .flatMapLatest(searchWikipedia)
+        .subscribe(data => {
+            var results = data[1];
+            var list = results.map((result) => `<li>${result}</li>`);
+            $('#input-results').html(list.join('\n'));
+        });
