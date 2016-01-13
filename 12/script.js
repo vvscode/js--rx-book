@@ -1,64 +1,32 @@
-// http://xgrommx.github.io/rx-book/content/how_do_i/existing_api.html
-/* For testing example you can use
-https://chrome.google.com/webstore/detail/change-geolocation/njjpmclekpigefnogajiknnheheacoaj/related?hl=en
-chrome extension
-*/
+// http://xgrommx.github.io/rx-book/content/how_do_i/jquery_with_rxjs.html
 
-var watchId;
+// Animation
+$("#go").clickAsObservable().flatMap(() => {
+    return $("#block").animateAsObservable({
+        width: "70%",
+        opacity: 0.4,
+        marginLeft: "0.6in",
+        fontSize: "3em",
+        borderWidth: "10px"
+    }, 1500);
+}).subscribe();
 
-function watchPositionChanged(position) {
-  // Do something with the coordinates
-  document.querySelector('#location').innerHTML = `${position.coords.latitude}, ${position.coords.longitude}`;
-  console.log('watchPositionChanged', position);
-}
+// Events
+Rx.Observable.fromEvent(
+    $(document),
+    'mousemove').subscribe(e => $('#results').text(`fromEvent: ${e.clientX}, ${e.clientY}`));
 
-function watchPositionError(e) {
-  var message = '';
-  switch (err.code) {
-    case err.PERMISSION_DENIED:
-      message = 'Permission denied';
-      break;
-    case err.POSITION_UNAVAILABLE:
-      message = 'Position unavailable';
-      break;
-    case err.PERMISSION_DENIED_TIMEOUT:
-      message = 'Position timeout';
-      break;
-  }
-  console.log('watchPositionError: ' + message, e);
-}
 
-function watchPosition(geolocationOptions) {
-  return Rx.Observable.create(observer => {
-    watchId = window.navigator.geolocation.watchPosition(
-      function successHandler (loc) {
-        observer.onNext(loc);
-      },
-      function errorHandler (err) {
-        observer.onError(err);
-      },
-      geolocationOptions);
-
-    return () => {
-      window.navigator.geolocation.clearWatch(watchId);
-    };
-  }).publish().refCount();
-}
-
-var source = watchPosition();
-
-var subscription = source.subscribe(
-  watchPositionChanged,
-  watchPositionError,
-  () => console.log('Completed')
-);
-
-var stopWatching = document.querySelector('#stopWatching');
-stopWatching.addEventListener('click', stopWatchingClicked, false);
-
-// Clear watching upon click
-function stopWatchingClicked(e) {
-  console.log('stopWatchingClicked', watchId);
-  navigator.geolocation.clearWatch(watchId);
-  document.querySelector('#stopWatching').remove();
-}
+// Events with plugin
+/**
+ * Creates an observable sequence by adding an event listener to the matching jQuery element
+ *
+ * @param {String} eventName The event name to attach the observable sequence.
+ * @param {Function} [selector] A selector which takes the arguments from the event handler to produce a single item to yield on next.
+ * @returns {Observable} An observable sequence of events from the specified element and the specified event.
+ */
+jQuery.fn.toObservable = function (eventName, selector) {
+    return Rx.Observable.fromEvent(this, eventName, selector);
+};
+$(document).toObservable('mousemove')
+    .subscribe(e => $('#results2').text(`fromPlugin: ${e.clientX}, ${e.clientY}`));
