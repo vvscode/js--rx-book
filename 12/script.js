@@ -53,3 +53,23 @@ $('#input').toObservable('keyup')
             var list = results.map((result) => `<li>${result}</li>`);
             $('#input-results').html(list.join('\n'));
         });
+
+
+// Using RxJS with Callbacks to Handle Simple Animations
+var animate = Rx.Observable.fromCallback(
+    block.animate,
+    null, /* default scheduler used */
+    block /* context */);
+// or
+// var animate = Rx.Observable.fromCallback(block.animate.bind(block));
+$('#go2').toObservable('click').flatMap(() => {
+    var block2 = $('#block2');
+    var animate = Rx.Observable.fromCallback(block2.animate.bind(block2));
+    return animate({
+        width: "30%",
+        opacity: 0.2,
+        marginLeft: "0.6in",
+        fontSize: "3em",
+        borderWidth: "10px"
+    }, 1500);
+}).subscribe();
